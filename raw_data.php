@@ -68,6 +68,8 @@ if (strtolower($map) === "monocle") {
         $scanner = new \Scanner\Monocle_Asner();
     } elseif (strtolower($fork) === "default") {
         $scanner = new \Scanner\Monocle();
+    } elseif (strtolower($fork) === "mad") {
+        $scanner = new \Scanner\Monocle_MAD();
     } else {
         $scanner = new \Scanner\Monocle_Alternate();
     }

@@ -72,6 +72,8 @@ module.exports = function (grunt) {
                     'static/dist/data/mapstyle.min.json': 'static/data/mapstyle.json',
                     'static/dist/data/searchmarkerstyle.min.json': 'static/data/searchmarkerstyle.json',
                     'static/dist/data/weather.min.json': 'static/data/weather.json',
+                    'static/dist/data/quests.min.json': 'static/data/quests.json',
+                    'static/dist/data/rewards.min.json': 'static/data/rewards.json',
                     'static/dist/locales/de.min.json': 'static/locales/de.json',
                     'static/dist/locales/fr.min.json': 'static/locales/fr.json',
                     'static/dist/locales/it.min.json': 'static/locales/it.json',

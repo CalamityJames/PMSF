@@ -113,6 +113,9 @@ var weatherColors
 
 var S2
 
+var questList = []
+var rewardList = []
+
 /*
  text place holders:
  <pkm> - pokemon name
@@ -763,7 +766,7 @@ function gymLabel(item) {
     return str
 }
 
-function pokestopLabel(expireTime, latitude, longitude, stopName) {
+function pokestopLabel(expireTime, latitude, longitude, stopName, questType, questStardust, questPokemonId, questRewardType, questItemId, questItemAmount, questTarget, questCondition) {
     var str
     if (stopName === undefined) {
         stopName = 'Pokéstop'
@@ -789,7 +792,36 @@ function pokestopLabel(expireTime, latitude, longitude, stopName) {
             'Location: <a href="javascript:void(0)" onclick="javascript:openMapDirections(' + latitude + ',' + longitude + ')" title="' + i8ln('View in Maps') + '">' + latitude.toFixed(6) + ', ' + longitude.toFixed(7) + '</a>' +
             '</div>'
     }
+    if (!noQuests && questType !== null) {
+        str += '<div>' +
+            i8ln('Quest:') + ' ' +
+            i8ln(questList[questType].replace('{0}', questTarget)) +
+            '</div>'
 
+        str += '<div>' +
+            i8ln('Reward:') + ' '
+        switch (questRewardType) {
+            case '2':
+                // item handling reward
+                str += i8ln(questItemAmount + ' ' + rewardList[questItemId])
+                break
+            case '3':
+                // stardust handler
+                str += i8ln(questStardust + ' Stardust')
+                break
+            case '7':
+                // pokemon handler
+                if (questPokemonId !== null && questPokemonId !== 0) {
+                    str += i8ln(idToPokemon[questPokemonId].name + ' encounter')
+                } else {
+                    str += 'Pokemon encounter'
+                }
+                break
+            default:
+            // no reward
+        }
+        str += '</div>'
+    }
     return str
 }
 
@@ -1162,6 +1194,10 @@ function updateGymIcons() {
 
 function setupPokestopMarker(item) {
     var imagename = item['lure_expiration'] ? 'PstopLured' : 'Pstop'
+    // also check if active quest
+    if ((!noQuests) && (item['quest_type'] !== null)) {
+        imagename = 'PstopLured'
+    }
     var marker = new google.maps.Marker({
         position: {
             lat: item['latitude'],
@@ -1177,7 +1213,7 @@ function setupPokestopMarker(item) {
     }
 
     marker.infoWindow = new google.maps.InfoWindow({
-        content: pokestopLabel(item['lure_expiration'], item['latitude'], item['longitude'], item['pokestop_name']),
+        content: pokestopLabel(item['lure_expiration'], item['latitude'], item['longitude'], item['pokestop_name'], item['quest_type'], item['quest_stardust'], item['quest_pokemon_id'], item['quest_reward_type'], item['quest_item_id'], item['quest_item_amount'], item['quest_target'], item['quest_condition']),
         disableAutoPan: true
     })
 
@@ -3006,6 +3042,19 @@ $(function () {
         weather = data.weather
         boostedMons = data.boosted_mons
     })
+    if (!noQuests) {
+        $.getJSON('static/dist/data/quests.min.json').done(function (data) {
+            $.each(data, function (key, value) {
+                questList[key] = value['text']
+            })
+        })
+
+        $.getJSON('static/dist/data/rewards.min.json').done(function (data) {
+            $.each(data, function (key, value) {
+                rewardList[key] = value['name']
+            })
+        })
+    }
 
     $selectExclude = $('#exclude-pokemon')
     $selectExcludeMinIV = $('#exclude-min-iv')

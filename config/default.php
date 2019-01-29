@@ -15,6 +15,7 @@ $libs[] = "Scanner.php";
 $libs[] = "Monocle.php";
 $libs[] = "Monocle_Asner.php";
 $libs[] = "Monocle_Alternate.php";
+$libs[] = "Monocle_MAD.php";
 $libs[] = "RocketMap.php";
 $libs[] = "RocketMap_Sloppy.php";
 
@@ -246,6 +247,12 @@ $weatherColors = [
     'white',
     'black'
 ];
+
+//-----------------------------------------------------
+// Quest Config
+//-----------------------------------------------------
+
+$noQuests = true;                                                      // true/false
 
 //-----------------------------------------------------
 // DEBUGGING
