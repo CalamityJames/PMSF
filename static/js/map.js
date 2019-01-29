@@ -1196,7 +1196,7 @@ function setupPokestopMarker(item) {
     var imagename = item['lure_expiration'] ? 'PstopLured' : 'Pstop'
     // also check if active quest
     if ((!noQuests) && (item['quest_type'] !== null)) {
-        imagename = 'PstopLured'
+        imagename += 'Quest'
     }
     var marker = new google.maps.Marker({
         position: {
