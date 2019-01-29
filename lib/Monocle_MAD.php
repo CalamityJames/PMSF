@@ -90,8 +90,6 @@ class Monocle_MAD extends Monocle_Alternate
         return $data;
     }
 
-    // todo: Full MAD spawnpoint support
-
     public function get_spawnpoints($swLat, $swLng, $neLat, $neLng, $tstamp = 0, $oSwLat = 0, $oSwLng = 0, $oNeLat = 0, $oNeLng = 0)
     {
         $conds = array();
@@ -124,7 +122,7 @@ class Monocle_MAD extends Monocle_Alternate
         $query = "SELECT latitude, 
         longitude, 
         spawnpoint AS spawnpoint_id,
-        REPLACE(calc_endminsec, ':', '') AS despawn_time,
+        calc_endminsec,
         NULL AS duration
         FROM   trs_spawn 
         WHERE :conditions";
@@ -138,7 +136,10 @@ class Monocle_MAD extends Monocle_Alternate
         foreach ($spawnpoints as $spawnpoint) {
             $spawnpoint["latitude"] = floatval($spawnpoint["latitude"]);
             $spawnpoint["longitude"] = floatval($spawnpoint["longitude"]);
-            $spawnpoint["time"] = intval($spawnpoint["despawn_time"]);
+            // convert the calculated spawn times back to seconds. fun!
+            $retime = explode(":", $spawnpoint['calc_endminsec']);
+            $spawnpoint["time"] = intval(($retime[0] * 60) + $retime[1]);
+            unset($retime, $spawnpoint["calc_endminsec"]);
             $spawnpoint["duration"] = intval($spawnpoint["duration"]);
             $data[] = $spawnpoint;
 
