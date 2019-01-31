@@ -49,7 +49,7 @@ class Monocle_MAD extends Monocle_Alternate
         pokestops.name AS pokestop_name,
         pokestops.url,
         trs_quest.quest_target,
-        trs_quest.quest_condition,
+        REPLACE(trs_quest.quest_condition, '\'', '\"') as quest_condition,
         trs_quest.quest_timestamp 
         FROM pokestops INNER JOIN trs_quest ON
                     (pokestops.external_id COLLATE utf8mb4_general_ci) = trs_quest.GUID WHERE
@@ -82,6 +82,59 @@ class Monocle_MAD extends Monocle_Alternate
         foreach ($pokestops as $pokestop) {
             $pokestop["latitude"] = floatval($pokestop["latitude"]);
             $pokestop["longitude"] = floatval($pokestop["longitude"]);
+
+            if ($pokestop["quest_condition"]) {
+                $questStr = strtolower($pokestop["quest_condition"]);
+                //print $questStr;die();
+                $quest_condition = json_decode($questStr);
+                $quest = $quest_condition[0];
+
+                if (is_a($quest, 'stdClass')) {
+                    switch($quest->type) {
+                        case 1:
+                            // type one is catch specific pokemon types
+                            $questData = $quest->with_pokemon_type->pokemon_type;
+                            break;
+                        case 2:
+                            // type 2 is catch specific pokemon
+                            $questData = $quest->with_pokemon_category->pokemon_ids;
+                            break;
+                        case 7:
+                            // type 7 is win a certain raid battle level
+                            $questData = $quest->with_raid_level->raid_level;
+                            break;
+                        case 8:
+                            // type 8 is make a certain type of throw
+                            $questData = $quest->with_throw_type->throw_type;
+                            // throwtypes:
+                            // 10: nice
+                            // 11: great
+                            // 12: excellent(?)
+                            break;
+                        case 11:
+                            // type 11 is use something catching a pokemon
+                            // or evolve a pokemon, if not set
+                            $questData = $quest->with_item->item;
+                            if (!$questData) {
+                                // it's an evolve task
+                            }
+                            break;
+                        case 14:
+                            // type 14 is make a certain number of throws in a row
+                            $questData = $quest->with_throw_type->throw_type;
+                            // throwtypes:
+                            // 10: nice
+                            // 11: great
+                            // 12: excellent(?)
+                            break;
+                        default:
+                            // everything else has no other specifics
+                            break;
+                    }
+                    $pokestop["quest_data_type"] = $quest->type;
+                    $pokestop["quest_data"] = $questData;
+                }
+            }
             $data[] = $pokestop;
 
             unset($pokestops[$i]);

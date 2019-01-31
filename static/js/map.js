@@ -766,7 +766,7 @@ function gymLabel(item) {
     return str
 }
 
-function pokestopLabel(expireTime, latitude, longitude, stopName, questType, questStardust, questPokemonId, questRewardType, questItemId, questItemAmount, questTarget, questCondition) {
+function pokestopLabel(expireTime, latitude, longitude, stopName, questType, questStardust, questPokemonId, questRewardType, questItemId, questItemAmount, questTarget, questDataType, questData) {
     var str
     if (stopName === undefined) {
         stopName = 'Pokéstop'
@@ -793,9 +793,77 @@ function pokestopLabel(expireTime, latitude, longitude, stopName, questType, que
             '</div>'
     }
     if (!noQuests && questType !== null) {
+
+        var questDetails = questList[questType]
+        // figure out what to do with quest additional data:
+        var questAppend = ''
+        var throwType
+        switch (questDataType) {
+            case 1:
+                // type 1 is catch specific pokemon types
+                break
+            case 2:
+                // type 2 is catch specific pokemon
+                break
+            case 7:
+                // type 7 is win a certain raid battle level
+                questDetails = questDetails.replace('{0}', '{0} level ' + questData[0] + ' or higher')
+                break
+            case 8:
+                // type 8 is make a certain type of throw
+                // throwtypes:
+                // 10: nice
+                // 11: great
+                // 12: excellent(?)
+                switch (questData) {
+                    case 10:
+                        throwType = 'Nice'
+                        break
+                    case 11:
+                        throwType = 'Great'
+                        break
+                    case 12:
+                        throwType = 'Excellent'
+                        break
+                }
+                questDetails = questDetails.replace('{0}', '{0} ' + throwType)
+                break
+            case 11:
+                // type 11 is use something catching a pokemon
+                // or evolve a pokemon, if not set
+                if (!questData) {
+                    // it's an evolve task
+                }
+                break
+            case 14:
+                // type 14 is make a certain number of throws in a row
+                // throwtypes:
+                // 10: nice
+                // 11: great
+                // 12: excellent(?)
+                switch (questData) {
+                    case 10:
+                        throwType = 'Nice'
+                        break
+                    case 11:
+                        throwType = 'Great'
+                        break
+                    case 12:
+                        throwType = 'Excellent'
+                        break
+                }
+                questDetails = questDetails.replace('{0}', '{0} ' + throwType)
+                questAppend = ' in a row'
+                break
+            default:
+                // everything else has no other specifics
+                break
+        }
+        // now add the target in
+        questDetails = questDetails.replace('{0}', questTarget) + questAppend
+
         str += '<div>' +
-            i8ln('Quest:') + ' ' +
-            i8ln(questList[questType].replace('{0}', questTarget)) +
+            i8ln('Quest: ') + questDetails +
             '</div>'
 
         str += '<div>' +
@@ -1213,7 +1281,7 @@ function setupPokestopMarker(item) {
     }
 
     marker.infoWindow = new google.maps.InfoWindow({
-        content: pokestopLabel(item['lure_expiration'], item['latitude'], item['longitude'], item['pokestop_name'], item['quest_type'], item['quest_stardust'], item['quest_pokemon_id'], item['quest_reward_type'], item['quest_item_id'], item['quest_item_amount'], item['quest_target'], item['quest_condition']),
+        content: pokestopLabel(item['lure_expiration'], item['latitude'], item['longitude'], item['pokestop_name'], item['quest_type'], item['quest_stardust'], item['quest_pokemon_id'], item['quest_reward_type'], item['quest_item_id'], item['quest_item_amount'], item['quest_target'], item['quest_data_type'], item['quest_data']),
         disableAutoPan: true
     })
 
