@@ -1152,49 +1152,6 @@ function getPokestopIcon(item, pokestopIcon) {
         '<img src="' + pokestopIcon + '" style="width:25px;height:auto;"/>' +
         questRewardStr +
         '</div>'
-
-
-    /*
-    var park = item['park']
-    var level = item.raid_level
-    var team = item.team_id
-    var teamStr = ''
-    if (team === 0 || level === null) {
-        teamStr = gymTypes[item['team_id']]
-    } else {
-        teamStr = gymTypes[item['team_id']] + '_' + level
-    }
-    var exIcon = ''
-    if ((((park !== 'None' && park !== undefined && onlyTriggerGyms === false && park) || (item['sponsor'] !== undefined && item['sponsor'] > 0) || triggerGyms.includes(item['gym_id'])) && (noExGyms === false))) {
-        exIcon = '<img src="static/images/ex.png" style="position:absolute;right:25px;bottom:2px;"/>'
-    }
-    if (item['raid_pokemon_id'] != null && item.raid_end > Date.now()) {
-        return '<div style="position:relative;">' +
-            '<img src="static/forts/' + Store.get('gymMarkerStyle') + '/' + teamStr + '.png" style="width:55px;height:auto;"/>' +
-            '<i class="pokemon-raid-sprite n' + item.raid_pokemon_id + '"></i>' +
-            exIcon +
-            '</div>'
-    } else if (item['raid_level'] !== null && item.raid_end > Date.now()) {
-        var raidEgg = ''
-        if (item['raid_level'] <= 2) {
-            raidEgg = 'normal'
-        } else if (item['raid_level'] <= 4) {
-            raidEgg = 'rare'
-        } else {
-            raidEgg = 'legendary'
-        }
-        return '<div style="position:relative;">' +
-            '<img src="static/forts/' + Store.get('gymMarkerStyle') + '/' + teamStr + '.png" style="width:55px;height:auto;"/>' +
-            '<img src="static/raids/egg_' + raidEgg + '.png" style="width:30px;height:auto;position:absolute;top:8px;right:12px;"/>' +
-            exIcon +
-            '</div>'
-    } else {
-        return '<div>' +
-            '<img src="static/forts/' + Store.get('gymMarkerStyle') + '/' + gymTypes[item['team_id']] + '.png" style="width:48px;height: auto;"/>' +
-            exIcon +
-            '</div>'
-    }
-    */
 }
 
 function setupGymMarker(item) {
