@@ -93,6 +93,7 @@
     "enablePokemon": true,
     "enablePokestops": true,
     "enableLured": true,
+    "showQuestRewards": true,
     "showWeather": true,
     "enableWeatherOverlay": true,
     "enableScannedLocations": true,

@@ -463,15 +463,30 @@ if ($blockIframe) {
                 </div>';
                 } ?>
                 <?php
+                echo '<div class="form-control switch-container" id = "pokestops-options-wrapper" style = "display:none">';
                 if ($map != "monocle") {
-                    echo '<div class="form-control switch-container" id = "lured-pokestops-only-wrapper" style = "display:none">
-                    <select name = "lured-pokestops-only-switch" id = "lured-pokestops-only-switch">
+                echo '<select name = "lured-pokestops-only-switch" id = "lured-pokestops-only-switch">
                         <option value = "0"> ' . i8ln('All') . '</option>
                         <option value = "1"> ' . i8ln('Only Lured') . ' </option>
-                    </select>
-                </div>';
+                    </select>';
                 } ?>
                 <?php
+                if (strtolower($fork) === "mad") {
+                    ?>
+                    <div class="form-control switch-container" id="quest-rewards-wrapper">
+                        <h3><?php echo i8ln('Show Quest Rewards') ?></h3>
+                        <div class="onoffswitch">
+                            <input id="quest-rewards-switch" type="checkbox" name="quest-rewards-switch"
+                                   class="onoffswitch-checkbox" checked>
+                            <label class="onoffswitch-label" for="quest-rewards-switch">
+                                <span class="switch-label" data-on="On" data-off="Off"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <?php
+                }
+                echo '</div>';
                 if ($map != "monocle" && !$noScannedLocations) {
                     echo '<div class="form-control switch-container">
                     <h3> ' . i8ln('Scanned Locations') . ' </h3>
@@ -945,6 +960,7 @@ if ($blockIframe) {
     var enablePokemon = <?php echo $noPokemon ? 'false' : $enablePokemon ?>;
     var enablePokestops = <?php echo $noPokestops ? 'false' : $enablePokestops ?>;
     var enableLured = <?php echo $map != "monocle" ? $enableLured : 0 ?>;
+    var showQuestRewards = <?php echo $noQuestRewards ? 'true' : $noQuestRewards ?>;
     var enableWeatherOverlay = <?php echo !$noWeatherOverlay ? $enableWeatherOverlay : 'false' ?>;
     var enableScannedLocations = <?php echo $map != "monocle" && !$noScannedLocations ? $enableScannedLocations : 'false' ?>;
     var enableSpawnpoints = <?php echo $noSpawnPoints ? 'false' : $enableSpawnPoints ?>;

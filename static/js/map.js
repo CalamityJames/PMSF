@@ -23,6 +23,7 @@ var $selectMaxGymLevel
 var $selectMinRaidLevel
 var $selectMaxRaidLevel
 var $selectLuredPokestopsOnly
+var $switchQuestRewards
 var $selectGymMarkerStyle
 var $selectLocationIconMarker
 var $switchGymSidebar
@@ -393,7 +394,9 @@ function initSidebar() {
     $('#tiny-rat-switch').prop('checked', Store.get('showTinyRat'))
     $('#pokestops-switch').prop('checked', Store.get('showPokestops'))
     $('#lured-pokestops-only-switch').val(Store.get('showLuredPokestopsOnly'))
-    $('#lured-pokestops-only-wrapper').toggle(Store.get('showPokestops'))
+    $('#pokestops-options-wrapper').toggle(Store.get('showPokestops'))
+    $('#quest-rewards-switch').prop('checked', Store.get('showQuestRewards'))
+    $('#quest-rewards-wrapper').toggle(Store.get('showPokestops'))
     $('#start-at-user-location-switch').prop('checked', Store.get('startAtUserLocation'))
     $('#start-at-last-location-switch').prop('checked', Store.get('startAtLastLocation'))
     $('#follow-my-location-switch').prop('checked', Store.get('followMyLocation'))
@@ -793,7 +796,6 @@ function pokestopLabel(expireTime, latitude, longitude, stopName, questType, que
             '</div>'
     }
     if (!noQuests && questType !== null) {
-
         var questDetails = questList[questType]
         // figure out what to do with quest additional data:
         var questAppend = ''
@@ -1135,6 +1137,66 @@ function getGymMarkerIcon(item) {
     }
 }
 
+function getPokestopIcon(item, pokestopIcon) {
+    var questRewardStr = ''
+    if (Store.get('showQuestRewards') === true) {
+        if (item['quest_pokemon_id'] !== 0 && item['quest_pokemon_id'] && item['quest_pokemon_id'] !== '0') {
+            questRewardStr = '<i style="position: absolute; left: -20px;" class="rewardStr pokemon-sprite n' + item['quest_pokemon_id'] + '"></i>'
+        } else if (item['quest_item_id'] !== 0 && item['quest_item_id'] && item['quest_item_id'] !== '0') {
+            questRewardStr = '<img src="static/items/item_' + item['quest_item_id'] + '.png" class="rewardStr" style="position: absolute; width: 30px; left: -20px;">'
+        } else if (item['quest_stardust'] !== 0 && item['quest_stardust'] && item['quest_stardust'] !== '0') {
+            questRewardStr = '<img class="rewardStr" src="static/items/item_stardust.png" style="position: absolute; width: 30px; left: -20px;">'
+        }
+    }
+    return '<div style="position:relative;">' +
+        '<img src="' + pokestopIcon + '" style="width:25px;height:auto;"/>' +
+        questRewardStr +
+        '</div>'
+
+
+    /*
+    var park = item['park']
+    var level = item.raid_level
+    var team = item.team_id
+    var teamStr = ''
+    if (team === 0 || level === null) {
+        teamStr = gymTypes[item['team_id']]
+    } else {
+        teamStr = gymTypes[item['team_id']] + '_' + level
+    }
+    var exIcon = ''
+    if ((((park !== 'None' && park !== undefined && onlyTriggerGyms === false && park) || (item['sponsor'] !== undefined && item['sponsor'] > 0) || triggerGyms.includes(item['gym_id'])) && (noExGyms === false))) {
+        exIcon = '<img src="static/images/ex.png" style="position:absolute;right:25px;bottom:2px;"/>'
+    }
+    if (item['raid_pokemon_id'] != null && item.raid_end > Date.now()) {
+        return '<div style="position:relative;">' +
+            '<img src="static/forts/' + Store.get('gymMarkerStyle') + '/' + teamStr + '.png" style="width:55px;height:auto;"/>' +
+            '<i class="pokemon-raid-sprite n' + item.raid_pokemon_id + '"></i>' +
+            exIcon +
+            '</div>'
+    } else if (item['raid_level'] !== null && item.raid_end > Date.now()) {
+        var raidEgg = ''
+        if (item['raid_level'] <= 2) {
+            raidEgg = 'normal'
+        } else if (item['raid_level'] <= 4) {
+            raidEgg = 'rare'
+        } else {
+            raidEgg = 'legendary'
+        }
+        return '<div style="position:relative;">' +
+            '<img src="static/forts/' + Store.get('gymMarkerStyle') + '/' + teamStr + '.png" style="width:55px;height:auto;"/>' +
+            '<img src="static/raids/egg_' + raidEgg + '.png" style="width:30px;height:auto;position:absolute;top:8px;right:12px;"/>' +
+            exIcon +
+            '</div>'
+    } else {
+        return '<div>' +
+            '<img src="static/forts/' + Store.get('gymMarkerStyle') + '/' + gymTypes[item['team_id']] + '.png" style="width:48px;height: auto;"/>' +
+            exIcon +
+            '</div>'
+    }
+    */
+}
+
 function setupGymMarker(item) {
     var marker = new RichMarker({
         position: new google.maps.LatLng(item['latitude'], item['longitude']),
@@ -1266,14 +1328,13 @@ function setupPokestopMarker(item) {
     if ((!noQuests) && (item['quest_type'] !== null)) {
         imagename += 'Quest'
     }
-    var marker = new google.maps.Marker({
-        position: {
-            lat: item['latitude'],
-            lng: item['longitude']
-        },
+
+    var marker = new RichMarker({
+        position: new google.maps.LatLng(item['latitude'], item['longitude']),
         map: map,
-        zIndex: 2,
-        icon: 'static/forts/' + imagename + '.png'
+        content: getPokestopIcon(item, 'static/forts/' + imagename + '.png'),
+        flat: true,
+        anchor: RichMarkerPosition.MIDDLE
     })
 
     if (!marker.rangeCircle && isRangeActive(map)) {
@@ -1282,11 +1343,22 @@ function setupPokestopMarker(item) {
 
     marker.infoWindow = new google.maps.InfoWindow({
         content: pokestopLabel(item['lure_expiration'], item['latitude'], item['longitude'], item['pokestop_name'], item['quest_type'], item['quest_stardust'], item['quest_pokemon_id'], item['quest_reward_type'], item['quest_item_id'], item['quest_item_amount'], item['quest_target'], item['quest_data_type'], item['quest_data']),
-        disableAutoPan: true
+        disableAutoPan: true,
+        pixelOffset: new google.maps.Size(0, -20)
     })
 
     addListeners(marker)
     return marker
+}
+
+function reloadPokestopMarker(item) {
+    var imagename = item['lure_expiration'] ? 'PstopLured' : 'Pstop'
+    // also check if active quest
+    if ((!noQuests) && (item['quest_type'] !== null)) {
+        imagename += 'Quest'
+    }
+
+    item.marker.setContent(getPokestopIcon(item, 'static/forts/' + imagename + '.png'))
 }
 
 function getColorByDate(value) {
@@ -2997,6 +3069,18 @@ $(function () {
         lastpokestops = false
         updateMap()
     })
+
+    $switchQuestRewards = $('#quest-rewards-switch')
+
+    $switchQuestRewards.on('change', function () {
+        Store.set('showQuestRewards', this.checked)
+        $.each(['pokestops'], function (d, dType) {
+            $.each(mapData[dType], function (key, value) {
+                reloadPokestopMarker(mapData[dType][key])
+            })
+        })
+    })
+
     $switchGymSidebar = $('#gym-sidebar-switch')
 
     $switchGymSidebar.on('change', function () {
@@ -3457,7 +3541,7 @@ $(function () {
         var options = {
             'duration': 500
         }
-        var wrapper = $('#lured-pokestops-only-wrapper')
+        var wrapper = $('#pokestops-options-wrapper')
         if (this.checked) {
             lastpokestops = false
             wrapper.show(options)

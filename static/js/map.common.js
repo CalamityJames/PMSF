@@ -984,6 +984,11 @@ var StoreOptions = {
             default: enableLured,
             type: StoreTypes.Number
         },
+    'showQuestRewards':
+        {
+            default: showQuestRewards,
+            type: StoreTypes.Boolean
+        },
     'showWeather':
         {
             default: enableWeatherOverlay,
