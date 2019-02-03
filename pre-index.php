@@ -471,7 +471,7 @@ if ($blockIframe) {
                     </select>';
                 } ?>
                 <?php
-                if (strtolower($fork) === "mad") {
+                if ((strtolower($fork) === "mad") && (!$noQuests)) {
                     ?>
                     <div class="form-control switch-container" id="quest-rewards-wrapper">
                         <h3><?php echo i8ln('Show Quest Rewards') ?></h3>

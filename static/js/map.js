@@ -1139,7 +1139,7 @@ function getGymMarkerIcon(item) {
 
 function getPokestopIcon(item, pokestopIcon) {
     var questRewardStr = ''
-    if (Store.get('showQuestRewards') === true) {
+    if ((Store.get('showQuestRewards') === true) && (!noQuests)) {
         if (item['quest_pokemon_id'] !== 0 && item['quest_pokemon_id'] && item['quest_pokemon_id'] !== '0') {
             questRewardStr = '<i style="position: absolute; left: -20px;" class="rewardStr pokemon-sprite n' + item['quest_pokemon_id'] + '"></i>'
         } else if (item['quest_item_id'] !== 0 && item['quest_item_id'] && item['quest_item_id'] !== '0') {
